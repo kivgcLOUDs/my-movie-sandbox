@@ -1,0 +1,22 @@
+{
+  "name": "my-movie-sandbox",
+  "version": "1.0.0",
+  "description": "A landing page for trillo",
+  "license": "ISC",
+  "author": "Daniel Victor",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "watched:sass": "sass sass/main.scss css/style.css -w",
+    "devserver": "live-server",
+    "start": "npm-run-all -p devserver watched:sass",
+    "compiled:sass": "sass sass/main.scss css/style-compile.css",
+    "concat:css": "concat -o css/style-joint.css css/style-compile.css css/icon-font.css",
+    "compress:css": "sass --style=compressed css/style-joint.css css/final.css",
+    "build": "npm-run-all compiled:sass concat:css compress:css"
+  },
+  "devDependencies": {
+    "npm-run-all": "^4.1.5",
+    "sass": "^1.100.0"
+  }
+}
