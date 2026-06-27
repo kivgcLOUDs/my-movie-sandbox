@@ -1,0 +1,36 @@
+* {
+  padding: 0;
+  margin: 0;
+}
+
+*,
+*::after,
+*::before {
+  box-sizing: inherit;
+}
+
+html {
+  box-sizing: border-box;
+  font-size: 62.5%;
+}
+
+:root {
+  --bg: #080810;
+  --surface: #0f0f1a;
+  --card: #13131f;
+  --border: #1f1f30;
+  --gold: #e8b84b;
+  --gold-dim: #7a5e1a;
+  --red: #e8453c;
+  --text: #e8e8f2;
+  --muted: #52526a;
+  --mono: "JetBrains Mono", monospace;
+  --display: "Bebas Neue", sans-serif;
+  --body: "Inter", sans-serif;
+}
+
+body {
+  background-color: var(--surface);
+  color: var(--text);
+  font-size: 1.8rem;
+}

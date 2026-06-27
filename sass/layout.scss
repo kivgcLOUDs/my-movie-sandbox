@@ -1,0 +1,72 @@
+.nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top-left-radius: 3rem;
+  border-top-right-radius: 3rem;
+
+  background-color: var(--bg);
+  width: 100%;
+  padding: 1.8rem 3rem 1.5rem 3rem;
+  color: var(--text);
+  text-transform: uppercase;
+  font-family: var(--mono);
+  font-size: 2rem;
+
+  &-logo span {
+    color: var(--gold);
+    font-weight: 300;
+    // transform: translateX(-5px);
+  }
+  &-logo--text {
+    font-weight: 300;
+  }
+
+  &-mode {
+    display: flex;
+
+    &-btn {
+      padding: 1rem 1.5rem;
+      text-transform: uppercase;
+      letter-spacing: 1.6px;
+      font-weight: 500;
+      font-family: var(--display);
+      color: var(--muted);
+
+      border: 1px solid var(--border);
+
+      &--movie {
+        border-top-left-radius: 1rem;
+        border-bottom-left-radius: 1rem;
+        padding: 1.5rem 2.8rem;
+      }
+
+      &--tv {
+        border-top-right-radius: 1rem;
+        border-bottom-right-radius: 1rem;
+        padding: 1.5rem 2rem;
+      }
+    }
+
+    &-btn--active {
+      background-color: var(--gold);
+      color: var(--surface);
+      font-weight: 800;
+    }
+  }
+}
+
+.master {
+  text-align: center;
+  &-header {
+    font-size: 5.5rem;
+    text-transform: uppercase;
+    font-family: var(--mono);
+    font-weight: 800;
+    line-height: 5rem;
+
+    & span {
+      color: var(--gold);
+    }
+  }
+}

@@ -1,7 +1,7 @@
 {
   "name": "my-movie-sandbox",
   "version": "1.0.0",
-  "description": "A landing page for trillo",
+  "description": "the one room project showcasing good use of API call and DOM manipulation using a movie API",
   "license": "ISC",
   "author": "Daniel Victor",
   "type": "commonjs",

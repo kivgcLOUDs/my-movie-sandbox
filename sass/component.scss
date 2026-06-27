@@ -1,0 +1,12 @@
+.container {
+  min-height: 95vh;
+  max-width: 1440px;
+  background-color: var(--card);
+  margin: 5rem auto;
+  border: 1px solid var(--border);
+  border-radius: 3rem;
+}
+
+.content {
+  padding: 8rem 8rem;
+}

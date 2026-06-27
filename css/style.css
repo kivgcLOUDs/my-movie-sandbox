@@ -1,0 +1,114 @@
+* {
+  padding: 0;
+  margin: 0;
+}
+
+*,
+*::after,
+*::before {
+  box-sizing: inherit;
+}
+
+html {
+  box-sizing: border-box;
+  font-size: 62.5%;
+}
+
+:root {
+  --bg: #080810;
+  --surface: #0f0f1a;
+  --card: #13131f;
+  --border: #1f1f30;
+  --gold: #e8b84b;
+  --gold-dim: #7a5e1a;
+  --red: #e8453c;
+  --text: #e8e8f2;
+  --muted: #52526a;
+  --mono: "JetBrains Mono", monospace;
+  --display: "Bebas Neue", sans-serif;
+  --body: "Inter", sans-serif;
+}
+
+body {
+  background-color: var(--surface);
+  color: var(--text);
+  font-size: 1.8rem;
+}
+
+.container {
+  min-height: 95vh;
+  max-width: 1440px;
+  background-color: var(--card);
+  margin: 5rem auto;
+  border: 1px solid var(--border);
+  border-radius: 3rem;
+}
+
+.content {
+  padding: 8rem 8rem;
+}
+
+.nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top-left-radius: 3rem;
+  border-top-right-radius: 3rem;
+  background-color: var(--bg);
+  width: 100%;
+  padding: 1.8rem 3rem 1.5rem 3rem;
+  color: var(--text);
+  text-transform: uppercase;
+  font-family: var(--mono);
+  font-size: 2rem;
+}
+.nav-logo span {
+  color: var(--gold);
+  font-weight: 300;
+}
+.nav-logo--text {
+  font-weight: 300;
+}
+.nav-mode {
+  display: flex;
+}
+.nav-mode-btn {
+  padding: 1rem 1.5rem;
+  text-transform: uppercase;
+  letter-spacing: 1.6px;
+  font-weight: 500;
+  font-family: var(--display);
+  color: var(--muted);
+  border: 1px solid var(--border);
+}
+.nav-mode-btn--movie {
+  border-top-left-radius: 1rem;
+  border-bottom-left-radius: 1rem;
+  padding: 1.5rem 2.8rem;
+}
+.nav-mode-btn--tv {
+  border-top-right-radius: 1rem;
+  border-bottom-right-radius: 1rem;
+  padding: 1.5rem 2rem;
+}
+.nav-mode-btn--active {
+  background-color: var(--gold);
+  color: var(--surface);
+  font-weight: 800;
+}
+
+.master {
+  text-align: center;
+}
+.master-header {
+  font-size: 5.5rem;
+  text-transform: uppercase;
+  font-family: var(--mono);
+  font-weight: 800;
+  line-height: 5rem;
+}
+.master-header span {
+  color: var(--gold);
+}
+
+/*# sourceMappingURL=style.css.map */
