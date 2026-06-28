@@ -32,8 +32,16 @@
       font-weight: 500;
       font-family: var(--display);
       color: var(--muted);
-
+      transition: all 0.2s;
       border: 1px solid var(--border);
+
+      &:hover{
+        background-color: #e9e7e7d0;
+      }
+
+      &::active{
+        background-color: var(--text);
+      }
 
       &--movie {
         border-top-left-radius: 1rem;
@@ -52,6 +60,14 @@
       background-color: var(--gold);
       color: var(--surface);
       font-weight: 800;
+
+      &:hover {
+        background-color: #e8b94bb2;
+      }
+
+      &:active {
+        background-color: var(--gold);
+      }
     }
   }
 }
@@ -106,10 +122,18 @@
       transform: translateX(-10px);
       border-bottom-right-radius: 1rem;
       border-top-right-radius: 1rem;
+      transition: all 0.2s;
+
+      &:hover{
+        // background-color: #e8b94bb2;
+        transform: translate(-10px, -.3rem);
+        box-shadow:1px 0 20px var(--border)
+      }
 
       &:active {
         border: 1px solid var(--border);
         outline: none;
+        background-color: var(--gold);
       }
     }
   }
@@ -166,6 +190,7 @@
 
 .detailed-view {
   &-btn--back {
+    position: relative;
     padding: 1rem;
     font-size: 1.8rem;
     color: var(--gold);
@@ -204,8 +229,11 @@
         color: var(--gold);
         padding: 1.5rem;
         font-size: 1.6rem;
-        width: 40%;
+        width: 30%;
         text-transform: capitalize;
+        letter-spacing: 1px;
+        font-family: var(--mono);
+        border-radius: 0.5rem;
       }
 
       &-chips {
