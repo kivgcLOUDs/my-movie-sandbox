@@ -34,3 +34,4 @@ movieCard.forEach((card) => {
     closest.classList.add("card--active");
   });
 });
+
