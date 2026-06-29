@@ -206,6 +206,11 @@ body {
 .movies-grid-items-info {
   padding: 1rem;
   background-color: var(--bg);
+  flex: 1;
+  font-family: Cinzel;
+  letter-spacing: 1.3px;
+  color: #acabb3;
+  font-size: 2.3rem;
 }
 .movies-grid-items-info-year {
   color: var(--muted);

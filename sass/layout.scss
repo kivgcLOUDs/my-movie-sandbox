@@ -35,11 +35,11 @@
       transition: all 0.2s;
       border: 1px solid var(--border);
 
-      &:hover{
+      &:hover {
         background-color: #e9e7e7d0;
       }
 
-      &::active{
+      &::active {
         background-color: var(--text);
       }
 
@@ -124,10 +124,10 @@
       border-top-right-radius: 1rem;
       transition: all 0.2s;
 
-      &:hover{
+      &:hover {
         // background-color: #e8b94bb2;
-        transform: translate(-10px, -.3rem);
-        box-shadow:1px 0 20px var(--border)
+        transform: translate(-10px, -0.3rem);
+        box-shadow: 1px 0 20px var(--border);
       }
 
       &:active {
@@ -180,6 +180,14 @@
       &-info {
         padding: 1rem;
         background-color: var(--bg);
+        flex: 1;
+        // font-family: var(--body);
+        // font-family: Trajan;
+        font-family: Cinzel;
+        letter-spacing: 1.3px;
+        // color: var(--gold);
+        color: #acabb3;
+        font-size: 2.3rem;
         &-year {
           color: var(--muted);
         }
