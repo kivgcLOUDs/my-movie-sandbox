@@ -5,6 +5,7 @@
   margin: 5rem auto;
   border: 1px solid var(--border);
   border-radius: 3rem;
+  box-shadow: 0 1.5rem 2rem var(--shadow);
 }
 
 .content {
@@ -14,4 +15,12 @@
 .movies {
   margin-top: 8rem;
   font-size: 1.8rem;
+  color: #acabb3;
+
+  &-btn {
+    margin-top: 3rem;
+    color: #acabb3;
+    display: flex;
+    justify-content: space-between;
+  }
 }

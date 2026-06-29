@@ -11,3 +11,16 @@
   border: 4px solid var(--gold);
   transform: translateY(-1.2rem);
 }
+
+/////////////////////
+/// LOADER
+.loader {
+  display: flex;
+  justify-content: center;
+  font-size: 3rem;
+  animation: loader 0.5s infinite;
+
+  &-spinner {
+    fill: var(--border);
+  }
+}

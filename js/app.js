@@ -6,6 +6,12 @@ const modeBtn = document.querySelectorAll(".nav-mode-btn");
 const movieCard = document.querySelectorAll(".movies-grid-items");
 const movieContainer = document.querySelector(".movies-grid");
 
+let maxNumberInPage;
+let currentPage = 1;
+
+let initialCount = 0;
+let totalCount = 5;
+
 /////////////////////////////
 // TOGGLE MODE BUTTON
 modeBtn.forEach((mBtn) => {
@@ -21,23 +27,6 @@ modeBtn.forEach((mBtn) => {
   });
 });
 
-/////////////////////////
-// TOGGLE ACTIVE CARDS
-// movieCard.forEach((card) => {
-//   card.style.transition = "all .4s";
-
-//   card.addEventListener("click", function (e) {
-//     const closest = e.target.closest(".movies-grid-items");
-//     if (!closest) return;
-
-//     movieCard.forEach((card) => {
-//       card.classList.remove("card--active");
-//     });
-
-//     closest.classList.add("card--active");
-//   });
-// });
-
 movieContainer.addEventListener("click", function (e) {
   if (!e.target.classList.contains === "movies-grid-items") return;
 
@@ -50,7 +39,7 @@ movieContainer.addEventListener("click", function (e) {
 });
 
 async function apiCall() {
-  const randomPages = Math.trunc(Math.random() * 5);
+  loaderSpinner6();
 
   const options = {
     method: "GET",
@@ -63,16 +52,19 @@ async function apiCall() {
 
   try {
     const res = await fetch(
-      `https://api.themoviedb.org/3/trending/movie/day?language=en-US&page=${randomPages}`,
+      `https://api.themoviedb.org/3/trending/movie/day?language=en-US&page=${currentPage}`,
       options,
     );
     const data = await res.json();
-
     const { results } = data;
-    results.length = 9;
+
+    maxNumberInPage = results.length - 1;
+
+    const result = results.slice(initialCount, totalCount);
+    console.log(result);
     console.log(results);
 
-    const html = results
+    const html = result
       .map((data) => {
         return `<div class="movies-grid-items">
               <div class="movies-grid-items-container">
@@ -97,6 +89,8 @@ async function apiCall() {
 
     console.log(data);
   } catch (err) {
+    // movieContainer.innerHTML = ``;
+    // movieContainer.insertAdjacentText = `An error ocurred: ${err.message}`;
     console.error(err.message);
   }
 }
@@ -104,3 +98,68 @@ async function apiCall() {
 apiCall();
 
 // https://api.themoviedb.org/3/movie/top_rated?api_key=${API_KEY}
+
+///////////////////
+// LOADER SPINNER
+function loaderSpinner6() {
+  const loader = `
+ <div class="loader">
+            <svg class="loader-spinner">
+              <use xlink:href="img/sprite.svg#icon-spinner6"></use>
+            </svg>
+          </div>`;
+
+  ////////////////
+  // ADDING LOADER
+  movieContainer.innerHTML = "";
+  movieContainer.insertAdjacentHTML("afterbegin", loader);
+}
+
+const controlbtnHTML = `<div class="movies-btn">
+              <button class="movies-grid-btn movies-btn--previous">
+                <span>&larr;</span> previous
+              </button>
+              <button class="movies-grid-btn movies-btn--next">
+                next <span>&rarr;</span>
+              </button>
+            </div>`;
+
+/////////////////////
+// EVENTLISTENERS
+
+function activeControls() {
+  const btnNext = document.querySelector(".movies-btn--next");
+  const btnPrevious = document.querySelector(".movies-btn--previous");
+  btnPrevious.classList.add("hidden");
+
+  btnPrevious.addEventListener("click", function (e) {
+    e.preventDefault();
+
+    if (initialCount === 0 && totalCount == 8) {
+      return btnPrevious.classList.add("hidden");
+    } else {
+      initialCount -= 8;
+      totalCount -= 8;
+      apiCall();
+      console.log(initialCount, totalCount);
+    }
+  });
+
+  btnNext.addEventListener("click", function (e) {
+    e.preventDefault();
+
+    if (totalCount >= maxNumberInPage) {
+      currentPage++;
+
+      initialCount = -8;
+      totalCount = 0;
+    }
+    btnPrevious.classList.remove("hidden");
+    initialCount += 8;
+    totalCount += 8;
+    apiCall();
+    console.log(initialCount, totalCount);
+  });
+}
+
+activeControls();

@@ -62,7 +62,8 @@
       font-weight: 800;
 
       &:hover {
-        background-color: #e8b94bb2;
+        background-color: var(--gold-dim);
+        color: var(--text);
       }
 
       &:active {
@@ -115,7 +116,7 @@
       padding: 1.7rem 2rem;
       font-size: 2rem;
       border: 1px solid var(--border);
-      color: var(--surface);
+      color: var(--muted);
       font-weight: 700;
       text-transform: capitalize;
       background-color: var(--gold);
@@ -126,8 +127,10 @@
 
       &:hover {
         // background-color: #e8b94bb2;
-        transform: translate(-10px, -0.3rem);
-        box-shadow: 1px 0 20px var(--border);
+        background-color: var(--gold-dim);
+        color: var(--text);
+        // transform: translate(-10px, -0.3rem);
+        // box-shadow: 1px 0 20px var(--border);
       }
 
       &:active {
@@ -140,6 +143,7 @@
 }
 
 .movies {
+  position: relative;
   &-trend {
     font-size: 1.1rem;
     text-transform: uppercase;
@@ -153,6 +157,31 @@
     display: flex;
     flex-wrap: wrap;
     gap: 3rem;
+    justify-content: center;
+
+    &-btn {
+      padding: 1rem 2rem;
+      border: 1px solid var(--border);
+      background-color: transparent;
+      width: 20%;
+      color: #acabb3;
+      font-size: 1.6rem;
+      text-transform: capitalize;
+      border-radius: 1rem;
+      letter-spacing: 1px;
+      font-family: var(--mono);
+      transition: all 0.2s;
+
+      &:hover {
+        transform: translateY(-4px);
+        box-shadow: 5px 0 2rem var(--shadow);
+      }
+
+      &:active {
+        transform: translateY(0);
+        box-shadow: 0 0 2rem var(--shadow);
+      }
+    }
 
     &-items {
       display: flex;

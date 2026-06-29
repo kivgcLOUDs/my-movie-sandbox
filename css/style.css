@@ -24,6 +24,7 @@ html {
   --red: #e8453c;
   --text: #e8e8f2;
   --muted: #52526a;
+  --shadow: #1b1b2e;
   --mono: "JetBrains Mono", monospace;
   --display: "Bebas Neue", sans-serif;
   --body: "Inter", sans-serif;
@@ -43,6 +44,7 @@ body {
   margin: 5rem auto;
   border: 1px solid var(--border);
   border-radius: 3rem;
+  box-shadow: 0 1.5rem 2rem var(--shadow);
 }
 
 .content {
@@ -52,6 +54,13 @@ body {
 .movies {
   margin-top: 8rem;
   font-size: 1.8rem;
+  color: #acabb3;
+}
+.movies-btn {
+  margin-top: 3rem;
+  color: #acabb3;
+  display: flex;
+  justify-content: space-between;
 }
 
 .nav {
@@ -110,7 +119,8 @@ body {
   font-weight: 800;
 }
 .nav-mode-btn--active:hover {
-  background-color: rgba(232, 185, 75, 0.6980392157);
+  background-color: var(--gold-dim);
+  color: var(--text);
 }
 .nav-mode-btn--active:active {
   background-color: var(--gold);
@@ -154,7 +164,7 @@ body {
   padding: 1.7rem 2rem;
   font-size: 2rem;
   border: 1px solid var(--border);
-  color: var(--surface);
+  color: var(--muted);
   font-weight: 700;
   text-transform: capitalize;
   background-color: var(--gold);
@@ -164,8 +174,8 @@ body {
   transition: all 0.2s;
 }
 .master-input-btn:hover {
-  transform: translate(-10px, -0.3rem);
-  box-shadow: 1px 0 20px var(--border);
+  background-color: var(--gold-dim);
+  color: var(--text);
 }
 .master-input-btn:active {
   border: 1px solid var(--border);
@@ -173,6 +183,9 @@ body {
   background-color: var(--gold);
 }
 
+.movies {
+  position: relative;
+}
 .movies-trend {
   font-size: 1.1rem;
   text-transform: uppercase;
@@ -185,6 +198,28 @@ body {
   display: flex;
   flex-wrap: wrap;
   gap: 3rem;
+  justify-content: center;
+}
+.movies-grid-btn {
+  padding: 1rem 2rem;
+  border: 1px solid var(--border);
+  background-color: transparent;
+  width: 20%;
+  color: #acabb3;
+  font-size: 1.6rem;
+  text-transform: capitalize;
+  border-radius: 1rem;
+  letter-spacing: 1px;
+  font-family: var(--mono);
+  transition: all 0.2s;
+}
+.movies-grid-btn:hover {
+  transform: translateY(-4px);
+  box-shadow: 5px 0 2rem var(--shadow);
+}
+.movies-grid-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 0 2rem var(--shadow);
 }
 .movies-grid-items {
   display: flex;
@@ -321,6 +356,25 @@ body {
 .card--active {
   border: 4px solid var(--gold);
   transform: translateY(-1.2rem);
+}
+
+.loader {
+  display: flex;
+  justify-content: center;
+  font-size: 3rem;
+  animation: loader 0.5s infinite;
+}
+.loader-spinner {
+  fill: var(--border);
+}
+
+@keyframes loader {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 /*# sourceMappingURL=style.css.map */
