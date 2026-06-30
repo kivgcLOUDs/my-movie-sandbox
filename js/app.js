@@ -5,7 +5,11 @@ const API_KEY = "5a7e69c75d29626271fba5012cefe52b";
 const modeBtn = document.querySelectorAll(".nav-mode-btn");
 const movieCard = document.querySelectorAll(".movies-grid-items");
 const movieContainer = document.querySelector(".movies-grid");
+const detailedContainer = document.querySelector(".detailed-view-content");
 const master = document.querySelector(".master");
+const masterInput = document.querySelector(".master-input");
+const masterBtn = document.querySelector(".master-input-btn");
+const resultText = document.querySelector(".movies-trend-text");
 const options = {
   method: "GET",
   headers: {
@@ -16,10 +20,11 @@ const options = {
 };
 
 let maxNumberInPage;
-let currentPage = 1;
+let currentPage = Math.trunc(Math.random() * 20);
 let initialCount = 0;
 let totalCount = 5;
 let mode = "movie";
+const newUrlParams = new URLSearchParams(window.location.search);
 
 /////////////////////////////
 // TOGGLE MODE BUTTON
@@ -50,6 +55,12 @@ function activeClasses() {
 
     const closest = e.target.closest(".movies-grid-items");
     closest.classList.add("card--active");
+
+    ////////////////
+    // FOR SWITCCHING TO DETAILED VIEW
+    const id = closest.dataset.id;
+    window.location.href = `#${id}`;
+    /////////////////
   });
 }
 
@@ -102,6 +113,52 @@ function loaderSpinner6() {
 /////////////////////
 // EVENTLISTENERS
 
+masterInput.addEventListener("submit", function (e) {
+  e.preventDefault();
+  const inputValue = masterInput.value;
+  totalCount = 8;
+  DisplaySearchOutput(inputValue);
+});
+
+masterBtn.addEventListener("click", function (e) {
+  e.preventDefault();
+  const inputValue = masterInput.value;
+  totalCount = 8;
+  DisplaySearchOutput(inputValue);
+});
+
+//////////////////
+// SEARCH CONTROLS
+async function DisplaySearchOutput(movieName) {
+  loaderSpinner6();
+  try {
+    const res = await fetch(
+      `https://api.themoviedb.org/3/search/movie?query=${movieName}&include_adult=false&language=en-US&page=1`,
+      options,
+    );
+    if (!res.ok) throw new Error();
+    const data = await res.json();
+    const { results } = data;
+
+    // ////////////////
+    // // BASIC RESET FOR LOOPING ALGORITHM
+    // initialCount = 0;
+    // totalCount = 5;
+
+    maxNumberInPage = results.length - 1;
+    const result = results.slice(initialCount, totalCount);
+
+    DisplayTrending(result);
+    resultText.textContent = `Found Results`;
+
+    console.log(data);
+  } catch (err) {
+    console.error(err.message);
+  }
+}
+
+/////////////////
+// "SEE MORE CONTROLS FOR THE HOME PAGE"
 function activeControls() {
   const btnNext = document.querySelector(".movies-btn--next");
   const btnPrevious = document.querySelector(".movies-btn--previous");
@@ -130,6 +187,7 @@ function activeControls() {
 
     initialCount -= 5;
     totalCount -= 5;
+    apiCall();
   }
   function nextAction(e) {
     e.preventDefault();
@@ -151,15 +209,15 @@ function activeControls() {
 }
 activeControls();
 
-function DisplayTrending(inputData) {
-  const html = inputData
+function DisplayTrending(loopedData) {
+  const html = loopedData
     .map((data) => {
-      return `<div class="movies-grid-items" href="${data.id}">
+      return `<div class="movies-grid-items" data-id="${data.id}">
               <div class="movies-grid-items-container">
                 <img
                   class="movies-grid-items-img"
                   src="https://image.tmdb.org/t/p/w500/${data.poster_path}"
-                  alt="movie name"
+                  alt="${data.original_title}"
                 />
               </div>
               <!-- src="https://tmdb.org${data.poster_path}" -->
@@ -176,4 +234,60 @@ function DisplayTrending(inputData) {
   movieContainer.insertAdjacentHTML("beforeend", html);
 
   activeClasses();
+}
+
+function DisplayDetails(id) {
+  detailedContainer.innerHTML = ``;
+  const html = `
+    <div class="detailed-view-content">
+          <div class="detailed-view-content-right">
+            <img
+              class="movies-grid-items-img"
+              src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQfPozAFHXPYGZ3TNJUaJpyBa_Oe55L902ijuYGbuKtCQ&s"
+              alt="movie name"
+            />
+          </div>
+
+          <div class="detailed-view-content-left">
+            <div class="detailed-view-content-left-chips">
+              <p class="detailed-view-content-left-chips-text">sci-fi</p>
+              <p class="detailed-view-content-left-chips-text">Adveture</p>
+              <p class="detailed-view-content-left-chips-text">Drama</p>
+            </div>
+            <h1 class="detailed-view-content-left-header">Dune: Part Two</h1>
+
+            <div class="detailed-view-content-left-info">
+              <p class="detailed-view-content-left-info-year">2024</p>
+              <p class="detailed-view-content-left-info-time">2h 45m</p>
+              <p class="detailed-view-content-left-info-director">
+                Directed by Van Dik
+              </p>
+            </div>
+
+            <div class="detailed-view-content-left-ratings">
+              <div class="detailed-view-content-left-ratings-rate">8.5</div>
+              <div class="detailed-view-content-left-ratings-info">
+                <p class="detailed-view-content-left-ratings-info-text">
+                  TMDB score
+                </p>
+                <p
+                  class="detailed-view-content-left-ratings-info-text detailed-view-content-left-ratings-info-text--2"
+                >
+                  Based on 12,400 ratings
+                </p>
+              </div>
+            </div>
+
+            <h2 class="detailed-view-content-left-about">
+              Lorem ipsum dolor sit, amet consectetur adipisicing elit.
+              Voluptatem repellat veritatis modi numquam commodi odit molestias
+              hic iste officia facere reprehenderit
+            </h2>
+
+            <button class="detailed-view-content-left--btn">
+              <span class="trans--1"> &hearts; </span>add to favourite
+            </button>
+          </div>
+        </div>
+  `;
 }
