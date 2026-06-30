@@ -26,6 +26,11 @@ let totalCount = 5;
 let mode = "movie";
 const newUrlParams = new URLSearchParams(window.location.search);
 
+/////////////////////
+// API CALLERS
+const trendingAPI = `https://api.themoviedb.org/3/trending/movie/day?language=en-US&page=${currentPage}`;
+let urlAPI = trendingAPI;
+
 /////////////////////////////
 // TOGGLE MODE BUTTON
 modeBtn.forEach((mBtn) => {
@@ -64,14 +69,11 @@ function activeClasses() {
   });
 }
 
-async function apiCall() {
+async function apiCall(url) {
   loaderSpinner6();
 
   try {
-    const res = await fetch(
-      `https://api.themoviedb.org/3/trending/movie/day?language=en-US&page=${currentPage}`,
-      options,
-    );
+    const res = await fetch(urlAPI, options);
     const data = await res.json();
     const { results } = data;
     maxNumberInPage = results.length - 1;
@@ -90,7 +92,7 @@ async function apiCall() {
   }
 }
 
-apiCall();
+apiCall(urlAPI);
 
 // https://api.themoviedb.org/3/movie/top_rated?api_key=${API_KEY}
 
@@ -131,11 +133,14 @@ masterBtn.addEventListener("click", function (e) {
 // SEARCH CONTROLS
 async function DisplaySearchOutput(movieName) {
   loaderSpinner6();
+  currentPage = 1;
+  initialCount = 0;
+  totalCount = 5;
+
+  const searchAPI = `https://api.themoviedb.org/3/search/movie?query=${movieName}&include_adult=false&language=en-US&page=${currentPage}`;
+  urlAPI = searchAPI;
   try {
-    const res = await fetch(
-      `https://api.themoviedb.org/3/search/movie?query=${movieName}&include_adult=false&language=en-US&page=1`,
-      options,
-    );
+    const res = await fetch(urlAPI, options);
     if (!res.ok) throw new Error();
     const data = await res.json();
     const { results } = data;
@@ -182,12 +187,12 @@ function activeControls() {
       initialCount = maxNumberInPage - 4;
       totalCount = maxNumberInPage + 1;
       console.log(initialCount, totalCount);
-      return apiCall();
+      return apiCall(urlAPI);
     }
 
     initialCount -= 5;
     totalCount -= 5;
-    apiCall();
+    apiCall(urlAPI);
   }
   function nextAction(e) {
     e.preventDefault();
@@ -204,7 +209,7 @@ function activeControls() {
     btnPrevious.classList.remove("hidden");
     initialCount += 5;
     totalCount += 5;
-    apiCall();
+    apiCall(urlAPI);
   }
 }
 activeControls();
