@@ -10,6 +10,8 @@ const master = document.querySelector(".master");
 const masterInput = document.querySelector(".master-input");
 const masterBtn = document.querySelector(".master-input-btn");
 const resultText = document.querySelector(".movies-trend-text");
+const btnNext = document.querySelector(".movies-btn--next");
+const btnPrevious = document.querySelector(".movies-btn--previous");
 const options = {
   method: "GET",
   headers: {
@@ -19,32 +21,31 @@ const options = {
   },
 };
 
-let maxNumberInPage;
-let currentPage = Math.trunc(Math.random() * 20);
-let initialCount = 0;
-let totalCount = 5;
-let mode = "movie";
-const newUrlParams = new URLSearchParams(window.location.search);
-
 class App {
   maxNumberInPage;
+  inputValue = masterInput.value;
   currentPage = Math.trunc(Math.random() * 20);
   initialCount = 0;
   totalCount = 5;
   mode = "movie";
   newUrlParams = new URLSearchParams(window.location.search);
 
-  trendingAPI = `https://api.themoviedb.org/3/trending/movie/day?language=en-US&page=${currentPage}`;
-  searchAPI = `https://api.themoviedb.org/3/search/movie?query=${movieName}&include_adult=false&language=en-US&page=${currentPage}`;
+  trendingAPI = `https://api.themoviedb.org/3/trending/movie/day?language=en-US&page=${this.currentPage}`;
+  searchAPI;
   urlAPI = this.trendingAPI;
 
   constructor() {
     this.apiCall(this.urlAPI);
     this.activeControls();
-    masterBtn.addEventListener("click", this.searchBtnClick).bind(this);
+    masterBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      const inputValue = masterInput.value;
+      this.totalCount = 8;
+      this.DisplaySearchOutput(inputValue);
+    });
   }
 
-  async apiCall(url) {
+  apiCall = async (url) => {
     this.loaderSpinner6();
 
     try {
@@ -54,7 +55,7 @@ class App {
       this.maxNumberInPage = results.length - 1;
       const result = results.slice(this.initialCount, this.totalCount);
 
-      this.DisplayTrending(result);
+      this.DisplayCards(result);
 
       console.log(result);
       console.log(results);
@@ -65,19 +66,21 @@ class App {
       // movieContainer.insertAdjacentText = `An error ocurred: ${err.message}`;
       console.error(err.message);
     }
-  }
+  };
 
   //////////////////
   // SEARCH CONTROLS
-  async DisplaySearchOutput(movieName) {
-    loaderSpinner6();
-    currentPage = 1;
+  // async DisplaySearchOutput(movieName) {
+  DisplaySearchOutput = async (movieName) => {
+    this.loaderSpinner6();
+    this.currentPage = 1;
     this.initialCount = 0;
 
+    this.searchAPI = `https://api.themoviedb.org/3/search/movie?query=${movieName}&include_adult=false&language=en-US&page=${this.currentPage}`;
     this.urlAPI = this.searchAPI;
 
     try {
-      const res = await fetch(urlAPI, options);
+      const res = await fetch(this.urlAPI, options);
       if (!res.ok) throw new Error();
       const data = await res.json();
       const { results } = data;
@@ -90,18 +93,18 @@ class App {
       this.maxNumberInPage = results.length - 1;
       const result = results.slice(this.initialCount, this.totalCount);
 
-      this.DisplayTrending(result);
+      this.DisplayCards(result);
       resultText.textContent = `Found Results`;
 
       console.log(data);
     } catch (err) {
       console.error(err.message);
     }
-  }
+  };
 
   ///////////////
   //DISPLAY TRENDING MOVIES
-  DisplayTrending(loopedData) {
+  DisplayCards(loopedData) {
     const html = loopedData
       .map((data) => {
         return `<div class="movies-grid-items" data-id="${data.id}">
@@ -125,6 +128,8 @@ class App {
     movieContainer.innerHTML = "";
     movieContainer.insertAdjacentHTML("beforeend", html);
 
+    ////////////////
+    // CALLED SO AFTER CARDS LOADS IT CAN GET THIER DATA-SET
     this.activeCard();
   }
 
@@ -138,21 +143,13 @@ class App {
       });
 
       const closest = e.target.closest(".movies-grid-items");
-      closest.classList.add("card--active");
+      // closest.classList.add("card--active");
 
       ////////////////
       // FOR SWITCCHING TO DETAILED VIEW
       const id = closest.dataset.id;
       window.location.href = `#${id}`;
-      /////////////////
     });
-  }
-
-  searchBtnClick(e) {
-    e.preventDefault();
-    const inputValue = masterInput.value;
-    this.totalCount = 8;
-    DisplaySearchOutput(inputValue);
   }
 
   ///////////////////
@@ -174,55 +171,50 @@ class App {
   /////////////////
   // "SEE MORE CONTROLS FOR THE HOME PAGE"
   activeControls() {
-    const btnNext = document.querySelector(".movies-btn--next");
-    const btnPrevious = document.querySelector(".movies-btn--previous");
     btnPrevious.classList.add("hidden");
 
-    btnPrevious.addEventListener("click", this.previousAction).bind(this);
+    btnPrevious.addEventListener("click", (e) => {
+      e.preventDefault();
+      if (this.initialCount === 0 && this.currentPage == 1) return;
 
-    btnNext.addEventListener("click", this.nextAction).bind(this);
-  }
+      master.scrollIntoView({
+        behaviour: "smooth",
+      });
 
-  previousAction(e) {
-    e.preventDefault();
-    master.scrollIntoView({
-      behaviour: "smooth",
+      if (this.currentPage > 1 && this.initialCount === 0) {
+        this.currentPage--;
+        this.initialCount = this.maxNumberInPage - 4;
+        this.totalCount = this.maxNumberInPage + 1;
+        console.log(this.initialCount, this.totalCount);
+        return this.apiCall(this.urlAPI);
+      }
+
+      this.initialCount -= 5;
+      this.totalCount -= 5;
+      this.apiCall(this.urlAPI);
     });
 
-    if (this.initialCount === 0 && this.totalCount == 8)
-      return btnPrevious.classList.add("hidden");
+    btnNext.addEventListener("click", (e) => {
+      e.preventDefault();
+      master.scrollIntoView({
+        behaviour: "smooth",
+      });
 
-    if (currentPage > 1 && this.initialCount === 0) {
-      currentPage--;
-      this.initialCount = maxNumberInPage - 4;
-      this.totalCount = maxNumberInPage + 1;
-      console.log(this.initialCount, this.totalCount);
-      return apiCall(urlAPI);
-    }
+      if (this.totalCount >= this.maxNumberInPage) {
+        this.currentPage++;
 
-    this.initialCount -= 5;
-    this.totalCount -= 5;
-    apiCall(urlAPI);
-  }
-
-  nextAction(e) {
-    e.preventDefault();
-    master.scrollIntoView({
-      behaviour: "smooth",
+        this.initialCount = -5;
+        this.totalCount = 0;
+      }
+      btnPrevious.classList.remove("hidden");
+      this.initialCount += 5;
+      this.totalCount += 5;
+      this.apiCall(this.urlAPI);
     });
-
-    if (this.totalCount >= maxNumberInPage) {
-      currentPage++;
-
-      this.initialCount = -5;
-      this.totalCount = 0;
-    }
-    btnPrevious.classList.remove("hidden");
-    this.initialCount += 5;
-    this.totalCount += 5;
-    apiCall(urlAPI);
   }
 
+  ///////////////
+  //INITIAL RESET (STATE)
   initDispaly() {
     this.initialCount = 0;
     this.totalCount = 5;
@@ -230,274 +222,282 @@ class App {
   }
 }
 
-/////////////////////
-// API CALLERS
-const trendingAPI = `https://api.themoviedb.org/3/trending/movie/day?language=en-US&page=${currentPage}`;
-let urlAPI = trendingAPI;
+const app = new App();
 
-/////////////////////////////
-// TOGGLE MODE BUTTON
-modeBtn.forEach((mBtn) => {
-  mBtn.addEventListener("click", function (e) {
-    e.preventDefault();
+// let maxNumberInPage;
+// let currentPage = Math.trunc(Math.random() * 20);
+// let initialCount = 0;
+// let totalCount = 5;
+// let mode = "movie";
+// const newUrlParams = new URLSearchParams(window.location.search);
+// /////////////////////
+// // API CALLERS
+// const trendingAPI = `https://api.themoviedb.org/3/trending/movie/day?language=en-US&page=${currentPage}`;
+// let urlAPI = trendingAPI;
 
-    modeBtn.forEach((btn) => {
-      btn.classList.remove("nav-mode-btn--active");
-    });
+// /////////////////////////////
+// // TOGGLE MODE BUTTON
+// modeBtn.forEach((mBtn) => {
+//   mBtn.addEventListener("click", function (e) {
+//     e.preventDefault();
 
-    // console.log(e.target);
-    e.target.classList.add("nav-mode-btn--active");
+//     modeBtn.forEach((btn) => {
+//       btn.classList.remove("nav-mode-btn--active");
+//     });
 
-    mode = e.target.dataset.mode;
-    console.log(mode);
-  });
-});
+//     // console.log(e.target);
+//     e.target.classList.add("nav-mode-btn--active");
 
-function activeClasses() {
-  movieContainer.addEventListener("click", function (e) {
-    if (!e.target.classList.contains === "movies-grid-items") return;
+//     mode = e.target.dataset.mode;
+//     console.log(mode);
+//   });
+// });
 
-    movieCard.forEach((card) => {
-      card.classList.add("card--active");
-      console.log(card);
-    });
+// function activeClasses() {
+//   movieContainer.addEventListener("click", function (e) {
+//     if (!e.target.classList.contains === "movies-grid-items") return;
 
-    const closest = e.target.closest(".movies-grid-items");
-    closest.classList.add("card--active");
+//     movieCard.forEach((card) => {
+//       card.classList.add("card--active");
+//       console.log(card);
+//     });
 
-    ////////////////
-    // FOR SWITCCHING TO DETAILED VIEW
-    const id = closest.dataset.id;
-    window.location.href = `#${id}`;
-    /////////////////
-  });
-}
+//     const closest = e.target.closest(".movies-grid-items");
+//     closest.classList.add("card--active");
 
-async function apiCall(url) {
-  loaderSpinner6();
+//     ////////////////
+//     // FOR SWITCCHING TO DETAILED VIEW
+//     const id = closest.dataset.id;
+//     window.location.href = `#${id}`;
+//     /////////////////
+//   });
+// }
 
-  try {
-    const res = await fetch(urlAPI, options);
-    const data = await res.json();
-    const { results } = data;
-    maxNumberInPage = results.length - 1;
-    const result = results.slice(this.initialCount, totalCount);
+// async function apiCall(url) {
+//   loaderSpinner6();
 
-    DisplayTrending(result);
+//   try {
+//     const res = await fetch(urlAPI, options);
+//     const data = await res.json();
+//     const { results } = data;
+//     maxNumberInPage = results.length - 1;
+//     const result = results.slice(this.initialCount, totalCount);
 
-    console.log(result);
-    console.log(results);
+//     DisplayCards(result);
 
-    console.log(data);
-  } catch (err) {
-    // movieContainer.innerHTML = ``;
-    // movieContainer.insertAdjacentText = `An error ocurred: ${err.message}`;
-    console.error(err.message);
-  }
-}
+//     console.log(result);
+//     console.log(results);
 
-apiCall(urlAPI);
+//     console.log(data);
+//   } catch (err) {
+//     // movieContainer.innerHTML = ``;
+//     // movieContainer.insertAdjacentText = `An error ocurred: ${err.message}`;
+//     console.error(err.message);
+//   }
+// }
 
-// https://api.themoviedb.org/3/movie/top_rated?api_key=${API_KEY}
+// apiCall(urlAPI);
 
-///////////////////
-// LOADER SPINNER
-function loaderSpinner6() {
-  const loader = `
- <div class="loader">
-            <svg class="loader-spinner">
-              <use xlink:href="img/sprite.svg#icon-spinner6"></use>
-            </svg>
-          </div>`;
+// // https://api.themoviedb.org/3/movie/top_rated?api_key=${API_KEY}
 
-  ////////////////
-  // ADDING LOADER
-  movieContainer.innerHTML = "";
-  movieContainer.insertAdjacentHTML("afterbegin", loader);
-}
+// ///////////////////
+// // LOADER SPINNER
+// function loaderSpinner6() {
+//   const loader = `
+//  <div class="loader">
+//             <svg class="loader-spinner">
+//               <use xlink:href="img/sprite.svg#icon-spinner6"></use>
+//             </svg>
+//           </div>`;
 
-/////////////////////
-// EVENTLISTENERS
+//   ////////////////
+//   // ADDING LOADER
+//   movieContainer.innerHTML = "";
+//   movieContainer.insertAdjacentHTML("afterbegin", loader);
+// }
 
-masterInput.addEventListener("submit", function (e) {
-  e.preventDefault();
-  const inputValue = masterInput.value;
-  totalCount = 8;
-  DisplaySearchOutput(inputValue);
-});
+// /////////////////////
+// // EVENTLISTENERS
 
-masterBtn.addEventListener("click", function (e) {
-  e.preventDefault();
-  const inputValue = masterInput.value;
-  totalCount = 8;
-  DisplaySearchOutput(inputValue);
-});
+// masterInput.addEventListener("submit", function (e) {
+//   e.preventDefault();
+//   const inputValue = masterInput.value;
+//   totalCount = 8;
+//   DisplaySearchOutput(inputValue);
+// });
 
-//////////////////
-// SEARCH CONTROLS
-async function DisplaySearchOutput(movieName) {
-  loaderSpinner6();
-  currentPage = 1;
-  initialCount = 0;
-  totalCount = 5;
+// masterBtn.addEventListener("click", function (e) {
+//   e.preventDefault();
+//   const inputValue = masterInput.value;
+//   totalCount = 8;
+//   DisplaySearchOutput(inputValue);
+// });
 
-  const searchAPI = `https://api.themoviedb.org/3/search/movie?query=${movieName}&include_adult=false&language=en-US&page=${currentPage}`;
-  urlAPI = searchAPI;
+// //////////////////
+// // SEARCH CONTROLS
+// async function DisplaySearchOutput(movieName) {
+//   loaderSpinner6();
+//   currentPage = 1;
+//   initialCount = 0;
+//   totalCount = 5;
 
-  try {
-    const res = await fetch(urlAPI, options);
-    if (!res.ok) throw new Error();
-    const data = await res.json();
-    const { results } = data;
+//   const searchAPI = `https://api.themoviedb.org/3/search/movie?query=${movieName}&include_adult=false&language=en-US&page=${currentPage}`;
+//   urlAPI = searchAPI;
 
-    // ////////////////
-    // // BASIC RESET FOR LOOPING ALGORITHM
-    // initialCount = 0;
-    // totalCount = 5;
+//   try {
+//     const res = await fetch(urlAPI, options);
+//     if (!res.ok) throw new Error();
+//     const data = await res.json();
+//     const { results } = data;
 
-    maxNumberInPage = results.length - 1;
-    const result = results.slice(initialCount, totalCount);
+//     // ////////////////
+//     // // BASIC RESET FOR LOOPING ALGORITHM
+//     // initialCount = 0;
+//     // totalCount = 5;
 
-    DisplayTrending(result);
-    resultText.textContent = `Found Results`;
+//     maxNumberInPage = results.length - 1;
+//     const result = results.slice(initialCount, totalCount);
 
-    console.log(data);
-  } catch (err) {
-    console.error(err.message);
-  }
-}
+//     DisplayCards(result);
+//     resultText.textContent = `Found Results`;
 
-/////////////////
-// "SEE MORE CONTROLS FOR THE HOME PAGE"
-function activeControls() {
-  const btnNext = document.querySelector(".movies-btn--next");
-  const btnPrevious = document.querySelector(".movies-btn--previous");
-  btnPrevious.classList.add("hidden");
+//     console.log(data);
+//   } catch (err) {
+//     console.error(err.message);
+//   }
+// }
 
-  btnPrevious.addEventListener("click", previousAction);
+// /////////////////
+// // "SEE MORE CONTROLS FOR THE HOME PAGE"
+// function activeControls() {
+//   const btnNext = document.querySelector(".movies-btn--next");
+//   const btnPrevious = document.querySelector(".movies-btn--previous");
+//   btnPrevious.classList.add("hidden");
 
-  btnNext.addEventListener("click", nextAction);
+//   btnPrevious.addEventListener("click", previousAction);
 
-  function previousAction(e) {
-    e.preventDefault();
-    master.scrollIntoView({
-      behaviour: "smooth",
-    });
+//   btnNext.addEventListener("click", nextAction);
 
-    if (initialCount === 0 && totalCount == 8)
-      return btnPrevious.classList.add("hidden");
+//   function previousAction(e) {
+//     e.preventDefault();
+//     master.scrollIntoView({
+//       behaviour: "smooth",
+//     });
 
-    if (currentPage > 1 && initialCount === 0) {
-      currentPage--;
-      initialCount = maxNumberInPage - 4;
-      totalCount = maxNumberInPage + 1;
-      console.log(initialCount, totalCount);
-      return apiCall(urlAPI);
-    }
+//     if (initialCount === 0 && totalCount == 8)
+//       return btnPrevious.classList.add("hidden");
 
-    initialCount -= 5;
-    totalCount -= 5;
-    apiCall(urlAPI);
-  }
-  function nextAction(e) {
-    e.preventDefault();
-    master.scrollIntoView({
-      behaviour: "smooth",
-    });
+//     if (currentPage > 1 && initialCount === 0) {
+//       currentPage--;
+//       initialCount = maxNumberInPage - 4;
+//       totalCount = maxNumberInPage + 1;
+//       console.log(initialCount, totalCount);
+//       return apiCall(urlAPI);
+//     }
 
-    if (totalCount >= maxNumberInPage) {
-      currentPage++;
+//     initialCount -= 5;
+//     totalCount -= 5;
+//     apiCall(urlAPI);
+//   }
+//   function nextAction(e) {
+//     e.preventDefault();
+//     master.scrollIntoView({
+//       behaviour: "smooth",
+//     });
 
-      initialCount = -5;
-      totalCount = 0;
-    }
-    btnPrevious.classList.remove("hidden");
-    initialCount += 5;
-    totalCount += 5;
-    apiCall(urlAPI);
-  }
-}
-activeControls();
+//     if (totalCount >= maxNumberInPage) {
+//       currentPage++;
 
-function DisplayTrending(loopedData) {
-  const html = loopedData
-    .map((data) => {
-      return `<div class="movies-grid-items" data-id="${data.id}">
-              <div class="movies-grid-items-container">
-                <img
-                  class="movies-grid-items-img"
-                  src="https://image.tmdb.org/t/p/w500/${data.poster_path}"
-                  alt="${data.original_title}"
-                />
-              </div>
-              <!-- src="https://tmdb.org${data.poster_path}" -->
+//       initialCount = -5;
+//       totalCount = 0;
+//     }
+//     btnPrevious.classList.remove("hidden");
+//     initialCount += 5;
+//     totalCount += 5;
+//     apiCall(urlAPI);
+//   }
+// }
+// activeControls();
 
-              <div class="movies-grid-items-info">
-                <h3 class="movies-grid-items-info-title">${data.original_title}</h3>
-                <p class="movies-grid-items-info-year">${data.release_date}</p>
-              </div>
-            </div>`;
-    })
-    .join("");
+// function DisplayCards(loopedData) {
+//   const html = loopedData
+//     .map((data) => {
+//       return `<div class="movies-grid-items" data-id="${data.id}">
+//               <div class="movies-grid-items-container">
+//                 <img
+//                   class="movies-grid-items-img"
+//                   src="https://image.tmdb.org/t/p/w500/${data.poster_path}"
+//                   alt="${data.original_title}"
+//                 />
+//               </div>
+//               <!-- src="https://tmdb.org${data.poster_path}" -->
 
-  movieContainer.innerHTML = "";
-  movieContainer.insertAdjacentHTML("beforeend", html);
+//               <div class="movies-grid-items-info">
+//                 <h3 class="movies-grid-items-info-title">${data.original_title}</h3>
+//                 <p class="movies-grid-items-info-year">${data.release_date}</p>
+//               </div>
+//             </div>`;
+//     })
+//     .join("");
 
-  activeClasses();
-}
+//   movieContainer.innerHTML = "";
+//   movieContainer.insertAdjacentHTML("beforeend", html);
 
-function DisplayDetails(id) {
-  detailedContainer.innerHTML = ``;
-  const html = `
-    <div class="detailed-view-content">
-          <div class="detailed-view-content-right">
-            <img
-              class="movies-grid-items-img"
-              src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQfPozAFHXPYGZ3TNJUaJpyBa_Oe55L902ijuYGbuKtCQ&s"
-              alt="movie name"
-            />
-          </div>
+//   activeClasses();
+// }
 
-          <div class="detailed-view-content-left">
-            <div class="detailed-view-content-left-chips">
-              <p class="detailed-view-content-left-chips-text">sci-fi</p>
-              <p class="detailed-view-content-left-chips-text">Adveture</p>
-              <p class="detailed-view-content-left-chips-text">Drama</p>
-            </div>
-            <h1 class="detailed-view-content-left-header">Dune: Part Two</h1>
+// function DisplayDetails(id) {
+//   detailedContainer.innerHTML = ``;
+//   const html = `
+//     <div class="detailed-view-content">
+//           <div class="detailed-view-content-right">
+//             <img
+//               class="movies-grid-items-img"
+//               src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQfPozAFHXPYGZ3TNJUaJpyBa_Oe55L902ijuYGbuKtCQ&s"
+//               alt="movie name"
+//             />
+//           </div>
 
-            <div class="detailed-view-content-left-info">
-              <p class="detailed-view-content-left-info-year">2024</p>
-              <p class="detailed-view-content-left-info-time">2h 45m</p>
-              <p class="detailed-view-content-left-info-director">
-                Directed by Van Dik
-              </p>
-            </div>
+//           <div class="detailed-view-content-left">
+//             <div class="detailed-view-content-left-chips">
+//               <p class="detailed-view-content-left-chips-text">sci-fi</p>
+//               <p class="detailed-view-content-left-chips-text">Adveture</p>
+//               <p class="detailed-view-content-left-chips-text">Drama</p>
+//             </div>
+//             <h1 class="detailed-view-content-left-header">Dune: Part Two</h1>
 
-            <div class="detailed-view-content-left-ratings">
-              <div class="detailed-view-content-left-ratings-rate">8.5</div>
-              <div class="detailed-view-content-left-ratings-info">
-                <p class="detailed-view-content-left-ratings-info-text">
-                  TMDB score
-                </p>
-                <p
-                  class="detailed-view-content-left-ratings-info-text detailed-view-content-left-ratings-info-text--2"
-                >
-                  Based on 12,400 ratings
-                </p>
-              </div>
-            </div>
+//             <div class="detailed-view-content-left-info">
+//               <p class="detailed-view-content-left-info-year">2024</p>
+//               <p class="detailed-view-content-left-info-time">2h 45m</p>
+//               <p class="detailed-view-content-left-info-director">
+//                 Directed by Van Dik
+//               </p>
+//             </div>
 
-            <h2 class="detailed-view-content-left-about">
-              Lorem ipsum dolor sit, amet consectetur adipisicing elit.
-              Voluptatem repellat veritatis modi numquam commodi odit molestias
-              hic iste officia facere reprehenderit
-            </h2>
+//             <div class="detailed-view-content-left-ratings">
+//               <div class="detailed-view-content-left-ratings-rate">8.5</div>
+//               <div class="detailed-view-content-left-ratings-info">
+//                 <p class="detailed-view-content-left-ratings-info-text">
+//                   TMDB score
+//                 </p>
+//                 <p
+//                   class="detailed-view-content-left-ratings-info-text detailed-view-content-left-ratings-info-text--2"
+//                 >
+//                   Based on 12,400 ratings
+//                 </p>
+//               </div>
+//             </div>
 
-            <button class="detailed-view-content-left--btn">
-              <span class="trans--1"> &hearts; </span>add to favourite
-            </button>
-          </div>
-        </div>
-  `;
-}
+//             <h2 class="detailed-view-content-left-about">
+//               Lorem ipsum dolor sit, amet consectetur adipisicing elit.
+//               Voluptatem repellat veritatis modi numquam commodi odit molestias
+//               hic iste officia facere reprehenderit
+//             </h2>
+
+//             <button class="detailed-view-content-left--btn">
+//               <span class="trans--1"> &hearts; </span>add to favourite
+//             </button>
+//           </div>
+//         </div>
+//   `;
+// }
