@@ -224,12 +224,20 @@ class App {
         this.currentPage--;
         this.initialCount = this.maxNumberInPage - 4;
         this.totalCount = this.maxNumberInPage + 1;
-        console.log(this.initialCount, this.totalCount);
         return this.apiCall(this.urlAPI);
       }
 
       this.initialCount -= 5;
       this.totalCount -= 5;
+
+      console.log(
+        "Btn Previous:",
+        this.initialCount,
+        this.totalCount,
+        "pages",
+        this.currentPage,
+        this.maxNumberInPage,
+      );
       this.apiCall(this.urlAPI);
     });
 
@@ -248,6 +256,15 @@ class App {
       btnPrevious.classList.remove("hidden");
       this.initialCount += 5;
       this.totalCount += 5;
+
+      console.log(
+        "Btn Next:",
+        this.initialCount,
+        this.totalCount,
+        "pages",
+        this.currentPage,
+        this.maxNumberInPage,
+      );
       this.apiCall(this.urlAPI);
     });
   }

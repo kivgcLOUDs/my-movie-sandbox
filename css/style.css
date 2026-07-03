@@ -13,6 +13,21 @@ html {
   box-sizing: border-box;
   font-size: 62.5%;
 }
+@media (max-width: 740px) {
+  html {
+    font-size: 50%;
+  }
+}
+@media (max-width: 640px) {
+  html {
+    font-size: 43%;
+  }
+}
+@media (max-width: 540px) {
+  html {
+    font-size: 33%;
+  }
+}
 
 :root {
   --bg: #080810;
@@ -46,6 +61,12 @@ body {
   border-radius: 3rem;
   box-shadow: 0 1.5rem 2rem var(--shadow);
 }
+@media (max-width: 1440px) {
+  .container {
+    margin: 0;
+    border-radius: 0;
+  }
+}
 
 .content {
   padding: 8rem 8rem;
@@ -77,6 +98,11 @@ body {
   font-family: var(--mono);
   font-size: 2rem;
 }
+@media (max-width: 1440px) {
+  .nav {
+    border-radius: 0;
+  }
+}
 .nav-logo span {
   color: var(--gold);
   font-weight: 300;
@@ -96,6 +122,13 @@ body {
   color: var(--muted);
   transition: all 0.2s;
   border: 1px solid var(--border);
+}
+@media (max-width: 640px) {
+  .nav-mode-btn {
+    font-weight: 300;
+    padding: 0.5rem 1rem;
+    font-size: 2rem;
+  }
 }
 .nav-mode-btn:hover {
   background-color: rgba(233, 231, 231, 0.8156862745);
@@ -159,6 +192,11 @@ body {
   border-top-left-radius: 1rem;
   outline: none;
 }
+@media (max-width: 360px) {
+  .master-input {
+    padding: 2rem;
+  }
+}
 .master-input-btn {
   margin-top: 8rem;
   padding: 1.7rem 2rem;
@@ -172,6 +210,11 @@ body {
   border-bottom-right-radius: 1rem;
   border-top-right-radius: 1rem;
   transition: all 0.2s;
+}
+@media (max-width: 360px) {
+  .master-input-btn {
+    padding: 2rem;
+  }
 }
 .master-input-btn:hover {
   background-color: var(--gold-dim);
@@ -198,6 +241,7 @@ body {
   display: flex;
   flex-wrap: wrap;
   gap: 3rem;
+  flex: 1;
   justify-content: center;
 }
 .movies-grid-btn {
@@ -225,19 +269,34 @@ body {
   display: flex;
   flex-direction: column;
   border: none;
-  width: 30%;
+  min-height: 200px;
+  width: 200px;
   background-image: linear-gradient(45deg, #3a2464, #573a8d);
   position: relative;
   border-radius: 1rem;
   overflow: hidden;
   transition: all 0.2s;
 }
+@media (max-width: 400px) {
+  .movies-grid-items {
+    max-height: 70px;
+    width: 100px;
+    font-size: 1.3rem;
+  }
+}
 .movies-grid-items:hover {
   transform: translateY(-0.6rem);
   box-shadow: 8px 0 2rem var(--border);
 }
 .movies-grid-items-container {
-  height: 30vh;
+  min-width: 30%;
+  height: 40vh;
+}
+@media (min-width: 400px) {
+  .movies-grid-items-container {
+    max-width: 30vh;
+    height: 30vh;
+  }
 }
 .movies-grid-items-img {
   width: 100%;
@@ -282,11 +341,12 @@ body {
   margin-top: 4rem;
 }
 .detailed-view-content-right {
+  min-height: 300px;
   height: 30vh;
-  width: 40%;
+  width: 50%;
   border-radius: 1rem;
   overflow: hidden;
-  background-image: linear-gradient(45deg, #3a2464, #573a8d);
+  background-image: linear-gradient(45deg, #1f1f30, #312646);
 }
 .detailed-view-content-left {
   flex: 1;
