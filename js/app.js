@@ -12,6 +12,12 @@ const masterBtn = document.querySelector(".master-input-btn");
 const resultText = document.querySelector(".movies-trend-text");
 const btnNext = document.querySelector(".movies-btn--next");
 const btnPrevious = document.querySelector(".movies-btn--previous");
+const searchView = document.querySelector(".search-view");
+const backBtn = document.querySelector(".btn--back");
+const detailedView = document.querySelector(".detailed-view");
+const moviesContainer = document.querySelector(".movies");
+
+const headerContainer = document.querySelector(".master");
 const options = {
   method: "GET",
   headers: {
@@ -21,6 +27,8 @@ const options = {
   },
 };
 
+// CHECK OUT Bang My Box: The Robin Byrd Story
+
 class App {
   maxNumberInPage;
   inputValue = masterInput.value;
@@ -28,6 +36,7 @@ class App {
   initialCount = 0;
   totalCount = 5;
   mode = "movie";
+  newID;
   newUrlParams = new URLSearchParams(window.location.search);
 
   trendingAPI = `https://api.themoviedb.org/3/trending/movie/day?language=en-US&page=${this.currentPage}`;
@@ -37,46 +46,52 @@ class App {
   constructor() {
     this.apiCall(this.urlAPI);
     this.activeControls();
+    this.modeToggle();
+
+    // SERCH BTN EVENT LISTERNER
     masterBtn.addEventListener("click", (e) => {
       e.preventDefault();
       const inputValue = masterInput.value;
       this.totalCount = 8;
       this.DisplaySearchOutput(inputValue);
     });
+
+    // BACK BUTTON EVENT LISTENER
+    backBtn.addEventListener("click", this.toggleToSearchView);
   }
 
+  // FIRST EVER API CALL THAT IS CALLED IMMEDIATLY TO DISPLAY TRENDING MOVIES
   apiCall = async (url) => {
     this.loaderSpinner6();
 
     try {
       const res = await fetch(this.urlAPI, options);
+
+      if (res.status === 504) throw new Error("Check internet connection");
+      if (!res.ok) throw new Error("Check internet connection");
+      if (res.status === 403) throw new Error("Server temporarily unavialable");
+      if (res.status === 404) throw new Error("Query not found");
+      if (res.status === 400) throw new Error("Try again");
+
       const data = await res.json();
       const { results } = data;
       this.maxNumberInPage = results.length - 1;
       const result = results.slice(this.initialCount, this.totalCount);
 
       this.DisplayCards(result);
-
-      console.log(result);
-      console.log(results);
-
-      console.log(data);
     } catch (err) {
-      // movieContainer.innerHTML = ``;
-      // movieContainer.insertAdjacentText = `An error ocurred: ${err.message}`;
       console.error(err.message);
+      this.errorMessage(movieContainer, err.message);
     }
   };
 
-  //////////////////
   // SEARCH CONTROLS
-  // async DisplaySearchOutput(movieName) {
   DisplaySearchOutput = async (movieName) => {
     this.loaderSpinner6();
     this.currentPage = 1;
     this.initialCount = 0;
 
-    this.searchAPI = `https://api.themoviedb.org/3/search/movie?query=${movieName}&include_adult=false&language=en-US&page=${this.currentPage}`;
+    this.searchAPI = `https://api.themoviedb.org/3/search/${this.mode}?query=${movieName}&include_adult=false&language=en-US&page=${this.currentPage}`;
     this.urlAPI = this.searchAPI;
 
     try {
@@ -84,11 +99,6 @@ class App {
       if (!res.ok) throw new Error();
       const data = await res.json();
       const { results } = data;
-
-      // ////////////////
-      // // BASIC RESET FOR LOOPING ALGORITHM
-      // this.initialCount = 0;
-      // this.totalCount = 5;
 
       this.maxNumberInPage = results.length - 1;
       const result = results.slice(this.initialCount, this.totalCount);
@@ -99,26 +109,26 @@ class App {
       console.log(data);
     } catch (err) {
       console.error(err.message);
+      this.errorMessage(movieContainer, err.message);
     }
   };
 
-  ///////////////
-  //DISPLAY TRENDING MOVIES
+  //DISPLAY TRENDING MOVIES CARDS
   DisplayCards(loopedData) {
     const html = loopedData
       .map((data) => {
-        return `<div class="movies-grid-items" data-id="${data.id}">
+        return `<div class="movies-grid-items" data-id="${data.original_title}">
               <div class="movies-grid-items-container">
                 <img
                   class="movies-grid-items-img"
                   src="https://image.tmdb.org/t/p/w500/${data.poster_path}"
-                  alt="${data.original_title}"
+                  alt="${data.title}"
                 />
               </div>
               <!-- src="https://tmdb.org${data.poster_path}" -->
 
               <div class="movies-grid-items-info">
-                <h3 class="movies-grid-items-info-title">${data.original_title}</h3>
+                <h3 class="movies-grid-items-info-title">${data.title}</h3>
                 <p class="movies-grid-items-info-year">${data.release_date}</p>
               </div>
             </div>`;
@@ -126,15 +136,16 @@ class App {
       .join("");
 
     movieContainer.innerHTML = "";
-    movieContainer.insertAdjacentHTML("beforeend", html);
+    movieContainer.insertAdjacentHTML("afterbegin", html);
 
     ////////////////
     // CALLED SO AFTER CARDS LOADS IT CAN GET THIER DATA-SET
-    this.activeCard();
+    this.selectedCards();
   }
 
-  activeCard() {
-    movieContainer.addEventListener("click", function (e) {
+  // GETING CARD ID TO LOAD MOVIE DETAILS
+  selectedCards() {
+    movieContainer.addEventListener("click", (e) => {
       if (!e.target.classList.contains === "movies-grid-items") return;
 
       movieCard.forEach((card) => {
@@ -143,16 +154,18 @@ class App {
       });
 
       const closest = e.target.closest(".movies-grid-items");
-      // closest.classList.add("card--active");
 
       ////////////////
       // FOR SWITCCHING TO DETAILED VIEW
       const id = closest.dataset.id;
       window.location.href = `#${id}`;
+      document.title = id;
+      this.newID = id;
+
+      this.DetailedAPI(this.newID);
     });
   }
 
-  ///////////////////
   // LOADER SPINNER
   loaderSpinner6() {
     const loader = `
@@ -162,13 +175,39 @@ class App {
             </svg>
           </div>`;
 
-    ////////////////
     // ADDING LOADER
     movieContainer.innerHTML = "";
     movieContainer.insertAdjacentHTML("afterbegin", loader);
   }
 
-  /////////////////
+  //TO TOGGLE SPINNER FOR DETAILED VIEW
+  loaderSpinner5() {
+    detailedContainer.innerHTML = "";
+    const loader = `
+ <div class="loader">
+            <svg class="loader-spinner">
+              <use xlink:href="img/sprite.svg#icon-spinner6"></use>
+            </svg>
+          </div>`;
+
+    detailedContainer.insertAdjacentHTML("beforeend", loader);
+  }
+
+  // TO TOGGLE BETWEEN VIEWS
+  toggleToSearchView() {
+    document.title = "Chine Search";
+    window.location.href = `#ChineSearch`;
+
+    detailedView.classList.add("hidden");
+    searchView.classList.remove("hidden");
+  }
+
+  // TO TOGGLE BETWEEN VIEWS
+  toogleToDetailedView() {
+    searchView.classList.add("hidden");
+    detailedView.classList.remove("hidden");
+  }
+
   // "SEE MORE CONTROLS FOR THE HOME PAGE"
   activeControls() {
     btnPrevious.classList.add("hidden");
@@ -213,12 +252,137 @@ class App {
     });
   }
 
-  ///////////////
   //INITIAL RESET (STATE)
   initDispaly() {
     this.initialCount = 0;
     this.totalCount = 5;
     this.currentPage = 1;
+  }
+
+  // TOGGLE MODE BUTTON
+  modeToggle() {
+    modeBtn.forEach((mBtn) => {
+      mBtn.addEventListener("click", function (e) {
+        e.preventDefault();
+
+        modeBtn.forEach((btn) => {
+          btn.classList.remove("nav-mode-btn--active");
+        });
+        e.target.classList.add("nav-mode-btn--active");
+
+        this.mode = e.target.dataset.mode;
+      });
+    });
+  }
+
+  // LOOPING OVER DATA TO SHOW DETIALS
+  DisplayDetails(loopedData) {
+    detailedContainer.innerHTML = ``;
+
+    const data = loopedData;
+
+    const html = `
+      <div class="detailed-view-content">
+      
+            <div class="detailed-view-content-right">
+
+
+              <img
+                class="movies-grid-items-img"
+                src="https://image.tmdb.org/t/p/w500/${data.poster_path}"
+                alt="${data.title}"
+              />
+            </div>
+  
+            <div class="detailed-view-content-left">
+            <!--
+              <div class="detailed-view-content-left-chips">
+                <p class="detailed-view-content-left-chips-text">sci-fi</p>
+                <p class="detailed-view-content-left-chips-text">Adveture</p>
+                <p class="detailed-view-content-left-chips-text">Drama</p>
+              </div>
+              -->
+              <h1 class="detailed-view-content-left-header">${data.title}</h1>
+  
+              <div class="detailed-view-content-left-info">
+                <p class="detailed-view-content-left-info-year">${data.release_date.slice(3).replaceAll("-", "/")}</p>
+                <p class="detailed-view-content-left-info-time">2h 45m</p>
+                <p class="detailed-view-content-left-info-director">
+                  Directed by Van Dik
+                </p>
+              </div>
+  
+              <div class="detailed-view-content-left-ratings">
+                <div class="detailed-view-content-left-ratings-rate">${data.vote_average.toFixed(1)}</div>
+                <div class="detailed-view-content-left-ratings-info">
+                  <p class="detailed-view-content-left-ratings-info-text">
+                    TMDB score
+                  </p>
+                  <p
+                    class="detailed-view-content-left-ratings-info-text detailed-view-content-left-ratings-info-text--2"
+                  >
+                    Based on ${data.vote_count} ratings
+                  </p>
+                </div>
+              </div>
+  
+              <h2 class="detailed-view-content-left-about">
+                ${data.overview}
+              </h2>
+  
+              <button class="detailed-view-content-left--btn">
+                <span class="trans--1"> &hearts; </span>add to favourite
+              </button>
+            </div>
+          </div>
+    `;
+    detailedContainer.insertAdjacentHTML("beforeend", html);
+  }
+
+  // RECIVES DATA FROM CARDS AND RUNS ASYNCHRONOSLY TO GET ABOUT INFO
+  DetailedAPI = async (id) => {
+    this.toogleToDetailedView();
+    this.loaderSpinner5();
+    this.currentPage = 1;
+    let result;
+
+    try {
+      const res = await fetch(
+        `https://api.themoviedb.org/3/search/movie?query=${id}&include_adult=false&language=en-US&page=${this.currentPage}`,
+        options,
+      );
+
+      if (!res.ok) throw new Error();
+
+      const data = await res.json();
+      this.initDispaly();
+      console.log(this.currentPage, this.initialCount, this.maxNumberInPage);
+
+      result = data.results[0];
+
+      if (result === undefined && result === "")
+        throw new Error("no response found");
+
+      console.log(result);
+    } catch (err) {
+      console.error(err.message);
+
+      this.errorMessage(detailedContainer, err.message);
+    } finally {
+      detailedContainer.innerHTML = "";
+      this.DisplayDetails(result);
+    }
+  };
+
+  // ERROR MESSAGE FOR EACH DISPLAYS
+  errorMessage(container, msg) {
+    const html = `
+    <div class="errorMessage">
+      <h1 class="msg">An error occured: ${msg}</h1>
+    </div>
+    `;
+    container.innerHTML = "";
+    container.insertAdjacentHTML("beforeend", html);
   }
 }
 

@@ -194,6 +194,12 @@
       position: relative;
       border-radius: 1rem;
       overflow: hidden;
+      transition: all 0.2s;
+
+      &:hover {
+        transform: translateY(-0.6rem);
+        box-shadow: 8px 0 2rem var(--border);
+      }
 
       &-container {
         // width: 100%;
@@ -204,9 +210,16 @@
       &-img {
         width: 100%;
         height: 100%;
+        transition: all 0.2s;
+        &:hover {
+          transform: scale(1.2);
+        }
       }
 
       &-info {
+        position: relative;
+        z-index: 1;
+
         padding: 1rem;
         background-color: var(--bg);
         flex: 1;
@@ -244,13 +257,15 @@
 
   &-content {
     display: flex;
+    flex-direction: column;
     gap: 2rem;
     margin-top: 4rem;
     &-right {
-      height: 40vh;
+      height: 30vh;
+      width: 40%;
       border-radius: 1rem;
       overflow: hidden;
-      // flex: %;
+      // flex: 1 1 10%;
       background-image: linear-gradient(45deg, #3a2464, #573a8d);
     }
 
@@ -259,19 +274,21 @@
       line-height: 4rem;
       position: relative;
       &--btn {
-        position: absolute;
-        bottom: 0;
-
+        // position: absolute;
+        // bottom: 0;
+        position: relative;
         background-color: transparent;
         border: 1px solid var(--gold);
         color: var(--gold);
         padding: 1.5rem;
         font-size: 1.6rem;
         width: 30%;
+        min-width: 20rem;
         text-transform: capitalize;
         letter-spacing: 1px;
         font-family: var(--mono);
         border-radius: 0.5rem;
+        margin-top: 2.5rem;
       }
 
       &-chips {
@@ -324,10 +341,11 @@
       }
       &-about {
         margin-top: 3rem;
-        line-height: 2.5rem;
+        line-height: 3rem;
         letter-spacing: 1.3px;
         color: #cdcdf7b4;
-        font-size: 2rem;
+        font-size: 2.3rem;
+        font-weight: 300;
       }
     }
   }
