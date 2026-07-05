@@ -238,10 +238,10 @@ body {
 }
 .movies-grid {
   margin-top: 5rem;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 3rem;
-  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-gap: 30px;
+  grid-template-rows: repeat(2, 1fr);
   justify-content: center;
 }
 .movies-grid-btn {
@@ -269,8 +269,6 @@ body {
   display: flex;
   flex-direction: column;
   border: none;
-  min-height: 200px;
-  width: 200px;
   background-image: linear-gradient(45deg, #3a2464, #573a8d);
   position: relative;
   border-radius: 1rem;
@@ -289,14 +287,7 @@ body {
   box-shadow: 8px 0 2rem var(--border);
 }
 .movies-grid-items-container {
-  min-width: 30%;
-  height: 40vh;
-}
-@media (min-width: 400px) {
-  .movies-grid-items-container {
-    max-width: 30vh;
-    height: 30vh;
-  }
+  width: 100%;
 }
 .movies-grid-items-img {
   width: 100%;
@@ -445,6 +436,28 @@ body {
 
 .errorMessage {
   color: rgb(153, 38, 38);
+  text-align: center;
+}
+
+.err-btn {
+  padding: 1rem 2rem;
+  border: 3px solid var(--border);
+  border-radius: 4px;
+  background-color: transparent;
+  color: var(--muted);
+  font-size: 2.7rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.err-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 1px 0 2rem var(--muted);
+}
+
+.err {
+  margin-top: 1.4rem;
+  display: flex;
+  justify-content: center;
 }
 
 @keyframes loader {

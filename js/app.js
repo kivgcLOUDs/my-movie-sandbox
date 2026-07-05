@@ -34,7 +34,7 @@ class App {
   inputValue = masterInput.value;
   currentPage = Math.trunc(Math.random() * 20);
   initialCount = 0;
-  totalCount = 5;
+  totalCount = 4;
   mode = "movie";
   newID;
   newUrlParams = new URLSearchParams(window.location.search);
@@ -146,7 +146,8 @@ class App {
   // GETING CARD ID TO LOAD MOVIE DETAILS
   selectedCards() {
     movieContainer.addEventListener("click", (e) => {
-      if (!e.target.classList.contains === "movies-grid-items") return;
+      // console.log(e);
+      if (!e.target.classList.contains("movies-grid-items")) return;
 
       movieCard.forEach((card) => {
         card.classList.add("card--active");
@@ -154,6 +155,7 @@ class App {
       });
 
       const closest = e.target.closest(".movies-grid-items");
+      console.log(closest);
 
       ////////////////
       // FOR SWITCCHING TO DETAILED VIEW
@@ -396,11 +398,40 @@ class App {
     const html = `
     <div class="errorMessage">
       <h1 class="msg">An error occured: ${msg}</h1>
+
+      <div class="err">
+      
+      <button class="err-btn">Retry</button>
+      </div>
     </div>
     `;
     container.innerHTML = "";
     container.insertAdjacentHTML("beforeend", html);
+
+    document
+      .querySelector(".err-btn")
+      .addEventListener("click", () => this.apiCall(this.urlAPI));
+  }
+
+  // TO CHECK IF ONLINE FROM TIME TO TIME TO RELOAD THE PAGE
+  internetStatus() {
+    const internet = navigator.onLine;
+
+    if (internet) {
+      this.apiCall(this.urlAPI);
+    } else {
+      return;
+    }
+  }
+
+  internetStatusInterval() {
+    setInterval(() => {
+      this.internetStatus();
+    }, 5000);
   }
 }
 
 const app = new App();
+
+const internet = navigator.onLine;
+console.log(internet);
