@@ -115,6 +115,7 @@ class App {
 
   //DISPLAY TRENDING MOVIES CARDS
   DisplayCards(loopedData) {
+    console.log(loopedData);
     const html = loopedData
       .map((data) => {
         return `<div class="movies-grid-items" data-id="${data.original_title}">
@@ -146,16 +147,16 @@ class App {
   // GETING CARD ID TO LOAD MOVIE DETAILS
   selectedCards() {
     movieContainer.addEventListener("click", (e) => {
-      // console.log(e);
-      if (!e.target.classList.contains("movies-grid-items")) return;
+      const closest = e.target.closest(".movies-grid-items");
+      console.log(closest);
+
+      // if (!e.target.closest("movies-grid-items")) return;
+      // console.log(e.target);
 
       movieCard.forEach((card) => {
         card.classList.add("card--active");
         console.log(card);
       });
-
-      const closest = e.target.closest(".movies-grid-items");
-      console.log(closest);
 
       ////////////////
       // FOR SWITCCHING TO DETAILED VIEW
@@ -281,7 +282,7 @@ class App {
   // TOGGLE MODE BUTTON
   modeToggle() {
     modeBtn.forEach((mBtn) => {
-      mBtn.addEventListener("click", function (e) {
+      mBtn.addEventListener("click", (e) => {
         e.preventDefault();
 
         modeBtn.forEach((btn) => {
@@ -379,7 +380,7 @@ class App {
 
       result = data.results[0];
 
-      if (result === undefined && result === "")
+      if (result === undefined || result === "")
         throw new Error("no response found");
 
       console.log(result);
@@ -432,6 +433,3 @@ class App {
 }
 
 const app = new App();
-
-const internet = navigator.onLine;
-console.log(internet);
