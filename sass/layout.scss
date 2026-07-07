@@ -332,6 +332,12 @@
         font-family: var(--mono);
         border-radius: 0.5rem;
         margin-top: 2.5rem;
+        cursor: pointer;
+
+        &:hover {
+          transform: translateY(-4px);
+          box-shadow: 5px 0 2rem var(--gold);
+        }
       }
 
       &-chips {
