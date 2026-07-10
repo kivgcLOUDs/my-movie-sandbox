@@ -177,9 +177,8 @@
   &-grid {
     margin-top: 5rem;
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
     grid-gap: 30px;
-    grid-template-rows: repeat(2, 1fr);
     justify-content: center;
 
     @media (max-width: 380px) {
@@ -213,10 +212,7 @@
     &-items {
       display: flex;
       flex-direction: column;
-
       border: none;
-      // min-height: 200px;
-      // width: 200px;
       background-image: linear-gradient(45deg, #3a2464, #573a8d);
       position: relative;
       border-radius: 1rem;
@@ -224,10 +220,9 @@
       transition: all 0.2s;
 
       @media (max-width: 400px) {
-        max-height: 70px;
-        width: 100px;
         font-size: 1.3rem;
       }
+
       &:hover {
         transform: translateY(-0.6rem);
         box-shadow: 8px 0 2rem var(--border);
@@ -235,43 +230,47 @@
 
       &-container {
         width: 100%;
-        // flex: 1;
-        // width: 50%;
-        // min-width: 30%;
-        // height: 40vh;
-
-        // @media (min-width: 400px) {
-        //   max-width: 30vh;
-        //   height: 30vh;
-        // }
+        min-height: 28rem;
+        overflow: hidden;
+        background-color: var(--surface);
       }
 
       &-img {
+        display: block;
         width: 100%;
         height: 100%;
+        object-fit: cover;
         transition: all 0.2s;
+
         &:hover {
-          transform: scale(1.2);
+          transform: scale(1.08);
         }
       }
 
       &-info {
         position: relative;
         z-index: 1;
-
-        padding: 1rem;
-        background-color: var(--bg);
         flex: 1;
-        // font-family: var(--body);
-        // font-family: Trajan;
-        // font-family: Cinzel;
+        display: flex;
+        flex-direction: column;
+        gap: 0.6rem;
+        padding: 1.4rem 1.6rem;
+        background-color: var(--bg);
         font-family: "Bebas Meue";
         letter-spacing: 1.3px;
-        // color: var(--gold);
         color: #acabb3;
         font-size: 2.3rem;
+
+        &-title {
+          margin: 0;
+          color: var(--text);
+          font-size: 2rem;
+        }
+
         &-year {
+          margin: 0;
           color: var(--muted);
+          font-size: 1.6rem;
         }
       }
     }
