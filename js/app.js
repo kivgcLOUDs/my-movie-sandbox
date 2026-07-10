@@ -39,7 +39,7 @@ class App {
   newID;
   newUrlParams = new URLSearchParams(window.location.search);
 
-  trendingAPI = `https://api.themoviedb.org/3/trending/movie/day?language=en-US&page=${this.currentPage}`;
+  trendingAPI = `https://api.themoviedb.org/3/trending/${this.mode}/day?language=en-US&page=${this.currentPage}`;
   searchAPI;
   urlAPI = this.trendingAPI;
 
@@ -116,7 +116,7 @@ class App {
   //DISPLAY TRENDING MOVIES CARDS
   DisplayCards(loopedData) {
     console.log(loopedData);
-    const html = loopedData
+    const movieHTML = loopedData
       .map((data) => {
         return `<div class="movies-grid-items" data-id="${data.original_title}">
               <div class="movies-grid-items-container">
@@ -136,8 +136,34 @@ class App {
       })
       .join("");
 
+    const tvHTML = loopedData
+      .map((data) => {
+        return `<div class="movies-grid-items" data-id="${data.name}">
+              <div class="movies-grid-items-container">
+                <img
+                  class="movies-grid-items-img"
+                  src="https://image.tmdb.org/t/p/w500/${data.poster_path}"
+                  alt="${data.name}"
+                />
+              </div>
+              <!-- src="https://tmdb.org${data.poster_path}" -->
+
+              <div class="movies-grid-items-info">
+                <h3 class="movies-grid-items-info-title">${data.name}</h3>
+                <p class="movies-grid-items-info-year">${data.first_air_date}</p>
+              </div>
+            </div>`;
+      })
+      .join("");
+
     movieContainer.innerHTML = "";
-    movieContainer.insertAdjacentHTML("afterbegin", html);
+
+    if (this.mode === "tv")
+      movieContainer.insertAdjacentHTML("beforeend", tvHTML);
+    if (this.mode === "movie")
+      movieContainer.insertAdjacentHTML("beforeend", movieHTML);
+
+    // movieContainer.insertAdjacentHTML("afterbegin", html);
 
     ////////////////
     // CALLED SO AFTER CARDS LOADS IT CAN GET THIER DATA-SET
@@ -285,12 +311,22 @@ class App {
       mBtn.addEventListener("click", (e) => {
         e.preventDefault();
 
+        masterInput.value = ``;
+        masterInput.blur();
+
         modeBtn.forEach((btn) => {
           btn.classList.remove("nav-mode-btn--active");
         });
         e.target.classList.add("nav-mode-btn--active");
 
-        this.mode = e.target.dataset.mode;
+        if (e.target.dataset.mode === "tv") {
+          this.mode = "tv";
+        } else {
+          this.mode = "movie";
+        }
+
+        this.apiCall(this.trendingAPI);
+        console.log(this.mode);
       });
     });
   }
@@ -301,7 +337,7 @@ class App {
 
     const data = loopedData;
 
-    const html = `
+    const movieHTML = `
       <div class="detailed-view-content">
       
             <div class="detailed-view-content-right">
@@ -325,7 +361,7 @@ class App {
               <h1 class="detailed-view-content-left-header">${data.title}</h1>
   
               <div class="detailed-view-content-left-info">
-                <p class="detailed-view-content-left-info-year">${data.release_date.slice(3).replaceAll("-", "/")}</p>
+                <p class="detailed-view-content-left-info-year">${data.release_date}</p>
                 <p class="detailed-view-content-left-info-time">2h 45m</p>
                 <p class="detailed-view-content-left-info-director">
                   Directed by Van Dik
@@ -356,7 +392,69 @@ class App {
             </div>
           </div>
     `;
-    detailedContainer.insertAdjacentHTML("beforeend", html);
+
+    const tvHTML = `
+      <div class="detailed-view-content">
+      
+            <div class="detailed-view-content-right">
+
+
+              <img
+                class="movies-grid-items-img"
+                src="https://image.tmdb.org/t/p/w500/${data.poster_path}"
+                alt="${data.name}"
+              />
+            </div>
+  
+            <div class="detailed-view-content-left">
+            <!--
+              <div class="detailed-view-content-left-chips">
+                <p class="detailed-view-content-left-chips-text">sci-fi</p>
+                <p class="detailed-view-content-left-chips-text">Adveture</p>
+                <p class="detailed-view-content-left-chips-text">Drama</p>
+              </div>
+              -->
+              <h1 class="detailed-view-content-left-header">${data.name}</h1>
+  
+              <div class="detailed-view-content-left-info">
+                <p class="detailed-view-content-left-info-year">${data.first_air_date}</p>
+                <p class="detailed-view-content-left-info-time">2h 45m</p>
+                <p class="detailed-view-content-left-info-director">
+                  Directed by Van Dik
+                </p>
+              </div>
+  
+              <div class="detailed-view-content-left-ratings">
+                <div class="detailed-view-content-left-ratings-rate">${data.vote_average.toFixed(1)}</div>
+                <div class="detailed-view-content-left-ratings-info">
+                  <p class="detailed-view-content-left-ratings-info-text">
+                    TMDB score
+                  </p>
+                  <p
+                    class="detailed-view-content-left-ratings-info-text detailed-view-content-left-ratings-info-text--2"
+                  >
+                    Based on ${data.vote_count} ratings
+                  </p>
+                </div>
+              </div>
+  
+              <h2 class="detailed-view-content-left-about">
+                ${data.overview}
+              </h2>
+  
+              <button class="detailed-view-content-left--btn">
+                <span class="trans--1"> &hearts; </span>add to favourite
+              </button>
+            </div>
+          </div>
+    `;
+    console.log(tvHTML);
+
+    if (this.mode === "tv") {
+      detailedContainer.insertAdjacentHTML("beforeend", tvHTML);
+    } else {
+      detailedContainer.insertAdjacentHTML("beforeend", movieHTML);
+    }
   }
 
   // RECIVES DATA FROM CARDS AND RUNS ASYNCHRONOSLY TO GET ABOUT INFO
@@ -368,7 +466,7 @@ class App {
 
     try {
       const res = await fetch(
-        `https://api.themoviedb.org/3/search/movie?query=${id}&include_adult=false&language=en-US&page=${this.currentPage}`,
+        `https://api.themoviedb.org/3/search/${this.mode}?query=${id}&include_adult=false&language=en-US&page=${this.currentPage}`,
         options,
       );
 
