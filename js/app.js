@@ -39,6 +39,7 @@ class App {
   newID;
   newUrlParams = new URLSearchParams(window.location.search);
 
+  trendingTvAPI = `https://api.themoviedb.org/3/trending/tv/day?language=en-US&page=${this.currentPage}`;
   trendingAPI = `https://api.themoviedb.org/3/trending/${this.mode}/day?language=en-US&page=${this.currentPage}`;
   searchAPI;
   urlAPI = this.trendingAPI;
@@ -65,7 +66,7 @@ class App {
     this.loaderSpinner6();
 
     try {
-      const res = await fetch(this.urlAPI, options);
+      const res = await fetch(url, options);
 
       if (res.status === 504) throw new Error("Check internet connection");
       if (!res.ok) throw new Error("Check internet connection");
@@ -321,11 +322,15 @@ class App {
 
         if (e.target.dataset.mode === "tv") {
           this.mode = "tv";
+          this.urlAPI = this.trendingTvAPI;
+          this.apiCall(this.urlAPI);
         } else {
           this.mode = "movie";
+          this.urlAPI = this.trendingAPI;
+          this.apiCall(this.urlAPI);
+          // console.log(this.trendingAPI);
         }
 
-        this.apiCall(this.trendingAPI);
         console.log(this.mode);
       });
     });
