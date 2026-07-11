@@ -32,9 +32,9 @@ const options = {
 class App {
   maxNumberInPage;
   inputValue = masterInput.value;
-  currentPage = Math.trunc(Math.random() * 20);
+  currentPage = Math.trunc(Math.random() * 30) + 1;
   initialCount = 0;
-  totalCount = 4;
+  totalCount = 5;
   mode = "movie";
   newID;
   newUrlParams = new URLSearchParams(window.location.search);
@@ -53,7 +53,7 @@ class App {
     masterBtn.addEventListener("click", (e) => {
       e.preventDefault();
       const inputValue = masterInput.value;
-      this.totalCount = 8;
+      this.totalCount = 5;
       this.DisplaySearchOutput(inputValue);
     });
 
@@ -79,6 +79,7 @@ class App {
       this.maxNumberInPage = results.length - 1;
       const result = results.slice(this.initialCount, this.totalCount);
 
+      movieContainer.innerHTML = ``;
       this.DisplayCards(result);
     } catch (err) {
       console.error(err.message);
@@ -91,6 +92,7 @@ class App {
     this.loaderSpinner6();
     this.currentPage = 1;
     this.initialCount = 0;
+    masterInput.blur();
 
     this.searchAPI = `https://api.themoviedb.org/3/search/${this.mode}?query=${movieName}&include_adult=false&language=en-US&page=${this.currentPage}`;
     this.urlAPI = this.searchAPI;
@@ -175,7 +177,6 @@ class App {
   selectedCards() {
     movieContainer.addEventListener("click", (e) => {
       const closest = e.target.closest(".movies-grid-items");
-      console.log(closest);
 
       // if (!e.target.closest("movies-grid-items")) return;
       // console.log(e.target);
@@ -207,7 +208,7 @@ class App {
 
     // ADDING LOADER
     movieContainer.innerHTML = "";
-    movieContainer.insertAdjacentHTML("afterbegin", loader);
+    movieContainer.insertAdjacentHTML("beforeend", loader);
   }
 
   //TO TOGGLE SPINNER FOR DETAILED VIEW
@@ -328,7 +329,6 @@ class App {
           this.mode = "movie";
           this.urlAPI = this.trendingAPI;
           this.apiCall(this.urlAPI);
-          // console.log(this.trendingAPI);
         }
 
         console.log(this.mode);
@@ -453,7 +453,6 @@ class App {
             </div>
           </div>
     `;
-    console.log(tvHTML);
 
     if (this.mode === "tv") {
       detailedContainer.insertAdjacentHTML("beforeend", tvHTML);
@@ -479,14 +478,11 @@ class App {
 
       const data = await res.json();
       this.initDispaly();
-      console.log(this.currentPage, this.initialCount, this.maxNumberInPage);
 
       result = data.results[0];
 
       if (result === undefined || result === "")
         throw new Error("no response found");
-
-      console.log(result);
     } catch (err) {
       console.error(err.message);
 
