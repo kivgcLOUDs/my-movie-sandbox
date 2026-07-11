@@ -34,7 +34,7 @@ class App {
   inputValue = masterInput.value;
   currentPage = Math.trunc(Math.random() * 30) + 1;
   initialCount = 0;
-  totalCount = 5;
+  totalCount = 8;
   mode = "movie";
   newID;
   newUrlParams = new URLSearchParams(window.location.search);
@@ -53,7 +53,7 @@ class App {
     masterBtn.addEventListener("click", (e) => {
       e.preventDefault();
       const inputValue = masterInput.value;
-      this.totalCount = 5;
+      this.totalCount = 8;
       this.DisplaySearchOutput(inputValue);
     });
 
